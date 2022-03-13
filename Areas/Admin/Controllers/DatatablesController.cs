@@ -207,16 +207,5 @@ namespace Payroll.Areas.Admin.Controllers
                 Data = list,
             });
         }
-
-        //[HttpGet("finance-timeattendance")]
-        //public async Task<IActionResult> TimeAttendance()
-        //{
-        //    var query=from attendance in _context.Attendances
-        //              join employee in _context.Employees
-        //              on attendance.EmpId equals employee.EmpId
-        //              group attendance by new { employee.EmpId,employee.EmpName }
-
-                      
-        //}
     }
 }

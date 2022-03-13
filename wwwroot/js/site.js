@@ -67,4 +67,15 @@ function menu_financereport_timeattendnace() {
     $('#menu_financereport_timeattendnace').addClass("active");
 }
 
+function menu_financereport_cpf() {
+    // Menu Item Active Method
+    $('#menu_financereport_collapse').addClass("menu-open");
+
+    // Menu Item Active Method
+    $('#menu_financereport').addClass("active");
+
+    // Menu Item Extract Collapse
+    $('#menu_financereport_cpf').addClass("active");
+}
+
 

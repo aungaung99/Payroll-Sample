@@ -1,0 +1,137 @@
+﻿@page
+@model Payroll.Areas.Admin.Pages.FinanceReport.CPFModel
+@{
+	ViewData["Title"] = "CPF Contribution";
+	ViewData["pageTitle"] = "CPF Contribution";
+	var totalamount = 0.0;
+}
+<!-- DataTables -->
+<link rel="stylesheet" href="~/plugins/datatables-bs4/css/dataTables.bootstrap4.min.css">
+<link rel="stylesheet" href="~/plugins/datatables-responsive/css/responsive.bootstrap4.min.css">
+<link rel="stylesheet" href="~/plugins/datatables-buttons/css/buttons.bootstrap4.min.css">
+<style>
+	.bg-success {
+		background: rgb(27 110 194 / 0.51) !important;
+	}
+
+	table.dataTable tbody td {
+		vertical-align: middle;
+		padding-top: 10px;
+		padding-bottom: 10px;
+	}
+
+	.dt-buttons {
+		position: absolute !important;
+		visibility: hidden;
+	}
+</style>
+<div class="container-fluid">
+	<div class="row">
+		<div class="col-12">
+			<div class="card">
+				<div class="card-body">
+					<div class="responsive">
+						<div>
+							<a href="#" class="btn btn-success" id="btnExcel">Excel</a>
+							<a href="#" class="btn btn-success" id="btnPDF">PDF</a>
+						</div>
+						<table id="cpfTable" class="table">
+							<thead class="bg-light">
+								<tr><th class="text-primary text-center text-bold h3" colspan="8">Contribution rate from @DateTime.Now.Date.ToString("MMM yyyy")</th></tr>
+								<tr>
+									<th>Employee</th>
+									<th>Age</th>
+									<th>Total Wage</th>
+									<th>By employer</th>
+									<th>Rate of wage</th>
+									<th>By employee</th>
+									<th>Rate of wage</th>
+									<th>Total Amount</th>
+								</tr>
+							</thead>
+							<tbody>
+								@foreach (var emp in Model.CPFModelList)
+								{
+									<tr>
+										<td>
+											@emp.EmpName
+										</td>
+										<td>
+											@emp.Age
+										</td>
+										<td>
+											$ @emp.TotalWage
+										</td>
+										<td>
+											$ @emp.ByEmployer
+										</td>
+										<td>
+											<span class="badge badge-success">@emp.ByEmployerRate %</span>
+										</td>
+										<td>
+											$ @emp.ByEmployee
+										</td>
+										<td>
+											<span class="badge badge-success">@emp.ByEmployeeRate %</span>
+										</td>
+										<td>
+											$ @emp.TotalAmount
+										</td>
+									</tr>
+									totalamount += (double)emp.TotalAmount;
+								}
+								<tr>
+									<td class="bg-light h4 text-bold" colspan="8">
+										Total Amount
+										<span class="float-right text-right">$ @totalamount.ToString("###,###.##")</span>
+									</td>
+								</tr>
+							</tbody>
+						</table>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+
+<partial name="_Vendor_Scripts" />
+<!-- DataTables  & Plugins -->
+<script src="~/plugins/datatables/jquery.dataTables.min.js"></script>
+<script src="~/plugins/datatables-bs4/js/dataTables.bootstrap4.min.js"></script>
+<script src="~/plugins/datatables-responsive/js/dataTables.responsive.min.js"></script>
+<script src="~/plugins/datatables-responsive/js/responsive.bootstrap4.min.js"></script>
+<script src="~/plugins/datatables-buttons/js/dataTables.buttons.min.js"></script>
+<script src="~/plugins/datatables-buttons/js/buttons.bootstrap4.min.js"></script>
+<script src="~/plugins/jszip/jszip.min.js"></script>
+<script src="~/plugins/pdfmake/pdfmake.min.js"></script>
+<script src="~/plugins/pdfmake/vfs_fonts.js"></script>
+<script src="~/plugins/datatables-buttons/js/buttons.html5.min.js"></script>
+<script src="~/plugins/datatables-buttons/js/buttons.print.min.js"></script>
+<script src="~/plugins/datatables-buttons/js/buttons.colVis.min.js"></script>
+<script>
+	$(document).ready(function () {
+		menu_financereport_cpf();
+
+		var url = "@Url.Content("~/")" + "api/datatables/finance-payroll";
+
+		var table = $('#cpfTable').DataTable({
+			paging: true,
+			lengthChange: false,
+			searching: false,
+			ordering: true,
+			info: true,
+			autoWidth: false,
+			responsive: false,
+			dom: 'Bfrtip'
+		});
+
+		$("#btnExcel").on("click", function () {
+			table.button('.buttons-excel').trigger();
+		});
+
+		$("#btnPDF").on("click", function () {
+			table.button('.buttons-pdf').trigger();
+		});
+	});
+</script>
