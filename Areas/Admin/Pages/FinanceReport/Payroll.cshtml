@@ -1,0 +1,121 @@
+﻿@page
+@model Payroll.Areas.Admin.Pages.FinanceReport.PayrollModel
+
+@{
+	ViewData["Title"] = "Payroll Report";
+	ViewData["pageTitle"] = "Payroll Report";
+}
+<!-- DataTables -->
+<link rel="stylesheet" href="~/plugins/datatables-bs4/css/dataTables.bootstrap4.min.css">
+<link rel="stylesheet" href="~/plugins/datatables-responsive/css/responsive.bootstrap4.min.css">
+<link rel="stylesheet" href="~/plugins/datatables-buttons/css/buttons.bootstrap4.min.css">
+<style>
+	table.dataTable tbody td {
+		vertical-align: middle;
+		padding-top: 5px;
+		padding-bottom: 5px;
+	}
+
+	.dt-buttons {
+		position: absolute !important;
+		visibility: hidden;
+	}
+</style>
+<div class="container-fluid">
+	<div class="row">
+		<div class="col-12">
+			<div class="card">
+				<div class="card-body">
+					<div>
+						<a href="#" class="btn btn-success" id="btnExcel">Excel</a>
+						<a href="#" class="btn btn-success" id="btnPDF">PDF</a>
+					</div>
+					<table id="example" class="table table-bordereless table-striped table-hover">
+						<thead class="bg-light">
+							<tr>
+								<th>Employee</th>
+								<th>Total Working Hour</th>
+								<th>Salary ($) / Hours</th>
+								<th>Total Amount</th>
+							</tr>
+						</thead>
+					</table>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+
+<partial name="_Vendor_Scripts" />
+<!-- DataTables  & Plugins -->
+<script src="~/plugins/datatables/jquery.dataTables.min.js"></script>
+<script src="~/plugins/datatables-bs4/js/dataTables.bootstrap4.min.js"></script>
+<script src="~/plugins/datatables-responsive/js/dataTables.responsive.min.js"></script>
+<script src="~/plugins/datatables-responsive/js/responsive.bootstrap4.min.js"></script>
+<script src="~/plugins/datatables-buttons/js/dataTables.buttons.min.js"></script>
+<script src="~/plugins/datatables-buttons/js/buttons.bootstrap4.min.js"></script>
+<script src="~/plugins/jszip/jszip.min.js"></script>
+<script src="~/plugins/pdfmake/pdfmake.min.js"></script>
+<script src="~/plugins/pdfmake/vfs_fonts.js"></script>
+<script src="~/plugins/datatables-buttons/js/buttons.html5.min.js"></script>
+<script src="~/plugins/datatables-buttons/js/buttons.print.min.js"></script>
+<script src="~/plugins/datatables-buttons/js/buttons.colVis.min.js"></script>
+<script>
+    $(document).ready(function () {
+		menu_financereport_payroll();
+
+		var url = "@Url.Content("~/")" + "api/datatables/finance-payroll";
+
+		var table = $('#example').DataTable({
+			paging: true,
+			lengthChange: false,
+			searching: false,
+			ordering: true,
+			info: true,
+			autoWidth: false,
+			responsive: true,
+			dom: 'Bfrtip',
+			ajax: function (data, callback, settings) {
+				$.ajax({
+					url: url,
+				}).then(function (json) {
+					json["data"] = json["data"];
+					callback(json);
+				});
+			},
+			columns: [
+				{ data: 'empName' },
+				{
+					data: null,
+					render: function (data, type, row) {
+						return '<span>' + numberWithCommas(row.totalWorkingHour.toFixed(2)) + '</span>';
+					}
+				},
+				{
+					data: null,
+					render: function (data, type, row) {
+						return '<span>$&nbsp;' + numberWithCommas(row.salary.toFixed(2)) + '</span>';
+					}
+				},
+				{
+					data: null,
+					render: function (data, type, row) {
+						return '<span>$&nbsp;' + numberWithCommas(row.totalAmount.toFixed(2))+'</span>';
+					}
+				},
+			]
+		});
+
+		$("#btnExcel").on("click", function () {
+			table.button('.buttons-excel').trigger();
+		});
+
+		$("#btnPDF").on("click", function () {
+			table.button('.buttons-pdf').trigger();
+		});
+	});
+
+	function numberWithCommas(x) {
+		return x.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+	}
+</script>

@@ -1,0 +1,30 @@
+﻿@page
+@model Payroll.Areas.Admin.Pages.LogoutModel
+@{
+	ViewData["Title"] = "Logout";
+	ViewData["pTitle"] = "Logout";
+}
+<div class="container-fluid">
+	<div class="row d-flex justify-content-center">
+		<div class="col-xl-4 col-lg-5 col-md-6 col-sm-10">
+			<div class="card">
+				<div class="card-header bg-light">
+					<h5 class="mb-0">Logout</h5>
+				</div>
+				<div class="card-body">
+					<p>Are you sure to want to logout?</p>
+					<form class="form-inline" method="post">
+						<button type="submit" class="btn btn-danger w-100">Logout</button>
+					</form>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+
+<partial name="_Vendor_Scripts" />
+<script>
+	$(document).ready(function () {
+		menu_logout();
+	});
+</script>

@@ -1,0 +1,134 @@
+﻿@page
+@model Payroll.Areas.Admin.Pages.Employee.CreateModel
+
+@{
+	ViewData["Title"] = "Employee";
+	ViewData["pageTitle"] = "Employee";
+}
+
+<!-- Select2 -->
+<link rel="stylesheet" href="~/plugins/select2/css/select2.min.css">
+<link rel="stylesheet" href="~/plugins/select2-bootstrap4-theme/select2-bootstrap4.min.css">
+
+<!-- daterange picker -->
+<link rel="stylesheet" href="~/plugins/daterangepicker/daterangepicker.css">
+<!-- iCheck for checkboxes and radio inputs -->
+<link rel="stylesheet" href="~/plugins/icheck-bootstrap/icheck-bootstrap.min.css">
+<!-- Tempusdominus Bootstrap 4 -->
+<link rel="stylesheet" href="~/plugins/tempusdominus-bootstrap-4/css/tempusdominus-bootstrap-4.min.css">
+
+<link rel="stylesheet" href="~/admin-lte/css/adminlte.css" />
+
+<div class="row d-flex justify-content-center">
+	<div class="col-md-6">
+		<form method="post" class="needs-validation" novalidate>
+			<div class="card">
+				<div class="card-header bg-light border-secondary border-bottom">
+					<div class="card-title pb-0">
+						<h5 class="mb-0">Create new employee</h5>
+					</div>
+				</div>
+				<div class="card-body">
+					<div asp-validation-summary="ModelOnly" class="text-danger"></div>
+					<div class="form-group mb-2">
+						<label class="control-label">Name</label>
+						<input asp-for="Employee.EmpName" class="form-control" placeholder="Enter name..." required />
+						<span class="invalid-feedback">
+							Please type name.
+						</span>
+					</div>
+					<div class="form-group mb-2">
+						<label asp-for="Employee.Dob" class="control-label"></label>
+						<div class="input-group date" id="reservationdate" data-target-input="nearest">
+							<input asp-for="Employee.Dob" id="dptDob" type="text" placeholder="mm/dd/yyyy" required
+								   class="form-control datetimepicker-input" data-target="#reservationdate" />
+							<div class="input-group-append" data-target="#reservationdate" data-toggle="datetimepicker">
+								<div class="input-group-text"><i class="fa fa-calendar"></i></div>
+							</div>
+							<span class="invalid-feedback">
+								Please choose date of birth.
+							</span>
+						</div>
+						
+					</div>
+					<div class="form-group mb-2">
+						<label class="control-label">Department</label>
+						<select id="DDLDepartment" class="form-control select2" asp-for="Employee.DeptCode" required></select>
+						<span class="invalid-feedback">
+							Please choose department.
+						</span>
+					</div>
+					<div class="form-group mb-2">
+						<label class="control-label">Hired Date</label>
+						<div class="input-group date" id="reservationdate1" data-target-input="nearest">
+							<input asp-for="Employee.HiredDate" id="dptDob" type="text" required
+								   placeholder="mm/dd/yyyy" class="form-control datetimepicker-input" data-target="#reservationdate1" />
+							<div class="input-group-append" data-target="#reservationdate1" data-toggle="datetimepicker">
+								<div class="input-group-text"><i class="fa fa-calendar"></i></div>
+							</div>
+							<span class="invalid-feedback">
+								Please type hired date.
+							</span>
+						</div>
+					</div>
+					<div class="form-group">
+						<label asp-for="Employee.Salary" class="control-label"></label>
+						<input asp-for="Employee.Salary" type="number" class="form-control" placeholder="Enter salary..." required />
+						<span class="invalid-feedback">
+							Please type salary.
+						</span>
+					</div>
+					<div class="form-group">
+						<input type="submit" value="Submit" class="btn btn-primary" />
+						<a asp-page="./Index" asp-area="Admin" class="btn btn-secondary">Cancel</a>
+					</div>
+				</div>
+			</div>
+		</form>
+	</div>
+</div>
+
+<partial name="_Vendor_Scripts" />
+
+<!-- Select2 -->
+<script src="~/plugins/select2/js/select2.full.min.js"></script>
+<!-- InputMask -->
+<script src="~/plugins/moment/moment.min.js"></script>
+<script src="~/plugins/inputmask/jquery.inputmask.min.js"></script>
+<!-- date-range-picker -->
+<script src="~/plugins/daterangepicker/daterangepicker.js"></script>
+<!-- Tempusdominus Bootstrap 4 -->
+<script src="~/plugins/tempusdominus-bootstrap-4/js/tempusdominus-bootstrap-4.min.js"></script>
+<!-- AdminLTE App -->
+<script src="~/admin-lte/js/adminlte.min.js"></script>
+<script>
+	$(document).ready(function () {
+		menu_employee();
+
+		$('.select2').select2();
+
+		//Date picker
+		$('#reservationdate').datetimepicker({
+			format: 'L'
+		});
+
+		//Date picker
+		$('#reservationdate1').datetimepicker({
+			format: 'L'
+		});
+
+		// Department API Requset
+		var url = '@Url.Content("~/")' + "api/datatables/departments";
+		$.getJSON(url, function (data) {
+			var jList = data["data"];
+			var items = '';
+			items += "<option selected disabled value=''>Choose Departments</option>";
+			$('DDLDepartment').empty();
+			$.each(jList, function (i, department) {
+				items += "<option class='select2-item' value='" + department.deptCode + "'>" + department.deptName + "</option>";
+			});
+			$('#DDLDepartment').html(items);
+		});
+
+	});
+</script>

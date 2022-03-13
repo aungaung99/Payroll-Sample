@@ -1,0 +1,147 @@
+﻿@page
+@model Payroll.Areas.Admin.Pages.FinanceReport.TimeAttendanceModel
+@{
+	ViewData["Title"] = "Time Attendance";
+	ViewData["pageTitle"] = "Time Attendance";
+	var DaysInmonth = DateTime.DaysInMonth(DateTime.Now.Year, DateTime.Now.Month);
+	var gColSpan = DaysInmonth + 1;
+}
+<!-- DataTables -->
+<link rel="stylesheet" href="~/plugins/datatables-bs4/css/dataTables.bootstrap4.min.css">
+<link rel="stylesheet" href="~/plugins/datatables-responsive/css/responsive.bootstrap4.min.css">
+<link rel="stylesheet" href="~/plugins/datatables-buttons/css/buttons.bootstrap4.min.css">
+<style>
+	.bg-success {
+		background: rgb(27 110 194 / 0.51) !important;
+	}
+	table.dataTable tbody td {
+		vertical-align: middle;
+		padding-top: 5px;
+		padding-bottom: 5px;
+	}
+
+	.dt-buttons {
+		position: absolute !important;
+		visibility: hidden;
+	}
+</style>
+<div class="container-fluid">
+	<div class="row">
+		<div class="col-12">
+			<div class="card">
+				<div class="card-body">
+					<div class="responsive">
+						<div>
+							<a href="#" class="btn btn-success" id="btnExcel">Excel</a>
+							<a href="#" class="btn btn-success" id="btnPDF">PDF</a>
+						</div>
+						<table id="timeattTable" class="table table-responsive">
+							<thead class="table-bordered bg-light">
+								<tr>
+									<th>Employee</th>
+									<th>Total Working Hour</th>
+									@for (var numb = 1; numb <= DaysInmonth; numb++)
+									{
+										<th>@numb</th>
+									}
+								</tr>
+							</thead>
+							<tbody class="table-bordered">
+								@foreach (var emp in Model.TimeAttendanceList)
+								{
+									<tr>
+										<td>
+											@emp.EmpName
+										</td>
+										<td>
+											<input value="@emp.EmpId" hidden /><b class="h3">@emp.TotalWorkingHours hrs</b>&nbsp;Total Working Hours
+										</td>
+										<!--loop all days of month-->
+										@for (var numb = 1; numb <= DaysInmonth; numb++)
+										{
+											<!--print only that date time value which is equal to current date(as it will match column header) and current employee name, else print empty-->
+											var GetThatDayValue = Model.TimeAttendanceList.Where(a => a.Date.Day == numb && a.EmpName == emp.EmpName).FirstOrDefault();
+											var DD = GetThatDayValue != null ? GetThatDayValue.InoutTime + "" : "A";
+
+
+											@if (DD == "A")
+											{
+												<td style="background-color:#f7ecec"></td>
+											}
+											else
+											{
+												<td>
+													@Html.Raw(DD)
+												</td>
+											}
+										}
+									</tr>
+								}
+							</tbody>
+						</table>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+
+<partial name="_Vendor_Scripts" />
+<!-- DataTables  & Plugins -->
+<script src="~/plugins/datatables/jquery.dataTables.min.js"></script>
+<script src="~/plugins/datatables-bs4/js/dataTables.bootstrap4.min.js"></script>
+<script src="~/plugins/datatables-responsive/js/dataTables.responsive.min.js"></script>
+<script src="~/plugins/datatables-responsive/js/responsive.bootstrap4.min.js"></script>
+<script src="~/plugins/datatables-buttons/js/dataTables.buttons.min.js"></script>
+<script src="~/plugins/datatables-buttons/js/buttons.bootstrap4.min.js"></script>
+<script src="~/plugins/jszip/jszip.min.js"></script>
+<script src="~/plugins/pdfmake/pdfmake.min.js"></script>
+<script src="~/plugins/pdfmake/vfs_fonts.js"></script>
+<script src="~/plugins/datatables-buttons/js/buttons.html5.min.js"></script>
+<script src="~/plugins/datatables-buttons/js/buttons.print.min.js"></script>
+<script src="~/plugins/datatables-buttons/js/buttons.colVis.min.js"></script>
+<script>
+    $(document).ready(function () {
+		menu_financereport_timeattendnace();
+
+		var url = "@Url.Content("~/")" + "api/datatables/finance-payroll";
+
+		var groupColumn = 1;
+		var table = $('#timeattTable').DataTable({
+			paging: true,
+			lengthChange: false,
+			searching: false,
+			ordering: true,
+			info: true,
+			autoWidth: false,
+			responsive: false,
+			dom: 'Bfrtip',
+			columnDefs: [
+				{ "visible": false, "targets": groupColumn },
+			],
+			ordering: [[groupColumn, 'asc']],
+			drawCallback: function (settings) {
+				var api = this.api();
+				var rows = api.rows({ page: 'current' }).nodes();
+				var last = null;
+
+				api.column(groupColumn, { page: 'current' }).data().each(function (group, i) {
+					if (last !== group) {
+						$(rows).eq(i).before(
+							'<tr class="group bg-success py-1"><td colspan="@gColSpan" class="py-1 test-dark">' + group + '</td></tr>'
+						);
+						last = group;
+					}
+				});
+			}
+		});
+
+		$("#btnExcel").on("click", function () {
+			table.button('.buttons-excel').trigger();
+		});
+
+		$("#btnPDF").on("click", function () {
+			table.button('.buttons-pdf').trigger();
+		});
+	});
+</script>

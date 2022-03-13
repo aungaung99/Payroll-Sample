@@ -1,0 +1,31 @@
+﻿@page
+@model Payroll.Areas.Admin.Pages.IndexModel
+@{
+	ViewBag.Title = "Dashboard";
+	ViewBag.pageTitle = "Dashboard";
+}
+<div class="container-fluid">
+	<div class="row d-flex justify-content-center">
+		<div class="col-lg-6">
+			<div class="card">
+				<div class="card-header bg-light">
+					<div class="card-title pb-0">
+						<div class="h4 mb-0">Welcom Text</div>
+					</div>
+				</div>
+				<div class="card-body text-center">
+					<h2>Admin Dashboard</h2>
+					<h6 class="text-muted">Welcome to Admin Dashboard</h6>
+					<a class="btn btn-primary">Learn More</a>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+
+<partial name="_Vendor_Scripts" />
+<script>
+	$(document).ready(function () {
+		menu_dashboard();
+	});
+</script>

@@ -1,0 +1,155 @@
+﻿@page
+@model Payroll.Areas.Admin.Pages.Departments.IndexModel
+@{
+	ViewData["Title"] = "Departments";
+	ViewData["pageTitle"] = "Departments";
+}
+
+
+<!-- DataTables -->
+<link rel="stylesheet" href="~/plugins/datatables-bs4/css/dataTables.bootstrap4.min.css">
+<link rel="stylesheet" href="~/plugins/datatables-responsive/css/responsive.bootstrap4.min.css">
+<link rel="stylesheet" href="~/plugins/datatables-buttons/css/buttons.bootstrap4.min.css">
+<!-- SweetAlert2 -->
+<link rel="stylesheet" href="~/plugins/sweetalert2-theme-bootstrap-4/bootstrap-4.min.css">
+<!-- Toastr -->
+<link rel="stylesheet" href="~/plugins/toastr/toastr.min.css">
+<!-- Theme style -->
+<link rel="stylesheet" href="~/admin-lte/css/adminlte.min.css">
+<div class="container-fluid">
+	<div class="row">
+		<div class="col-12">
+			<div class="card">
+				<div class="card-body">
+					<div class="row">
+						<div class="col-md-4 mb-3">
+							<input type="file" id="fileToBeUploaded" onchange="checkfile(this);" accept="application/vnd.msexcel" class="form-control bg-light px-1 pt-1" />
+						</div>
+						<div class="col-md-2 mb-3">
+							<a id="btnImport" href="#" class="btn btn-success"><i class="fa fa-file-excel"></i>&nbsp;&nbsp;Import Excel</a>
+						</div>
+					</div>
+					<table id="example" class="table table-bordereless table-striped table-hover">
+						<thead class="bg-light">
+							<tr>
+								<th>Code</th>
+								<th>Name</th>
+								<th>Action</th>
+							</tr>
+						</thead>
+					</table>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+<input type="file" id="FileUpload" hidden/>
+<partial name="_Vendor_Scripts" />
+<!-- DataTables  & Plugins -->
+<script src="~/plugins/datatables/jquery.dataTables.min.js"></script>
+<script src="~/plugins/datatables-bs4/js/dataTables.bootstrap4.min.js"></script>
+<script src="~/plugins/datatables-responsive/js/dataTables.responsive.min.js"></script>
+<script src="~/plugins/datatables-responsive/js/responsive.bootstrap4.min.js"></script>
+<script src="~/plugins/datatables-buttons/js/dataTables.buttons.min.js"></script>
+<script src="~/plugins/datatables-buttons/js/buttons.bootstrap4.min.js"></script>
+<script src="~/plugins/jszip/jszip.min.js"></script>
+<script src="~/plugins/pdfmake/pdfmake.min.js"></script>
+<script src="~/plugins/pdfmake/vfs_fonts.js"></script>
+<script src="~/plugins/datatables-buttons/js/buttons.html5.min.js"></script>
+<script src="~/plugins/datatables-buttons/js/buttons.print.min.js"></script>
+<script src="~/plugins/datatables-buttons/js/buttons.colVis.min.js"></script>
+<!-- Toastr -->
+<script src="~/plugins/toastr/toastr.min.js"></script>
+<!-- Page specific script -->
+<script>
+	$(document).ready(function () {
+		var table=$('#example').DataTable({
+			ajax: function (data, callback, settings) {
+				$.ajax({
+					url: "@Url.Content("~/")" + "api/datatables/departments",
+				}).then(function (json) {
+					json["data"] = json["data"];
+					callback(json);
+				});
+			},
+			columns: [
+				{ data: "deptCode" },
+				{ data: "deptName" },
+				{
+					data: "deptCode",
+					render: function (data) {
+						return '<a class="btn btn-outline-primary btn-sm edit mr-1" href="foodtypes/edit?id=' + data + '">' +
+							'<i class="fas fa-pencil-alt"></i></a>' +
+							'<a class="btn btn-outline-danger btn-sm deleted" href="foodtypes/delete?id=' + data + '">' +
+							'<i class="fas fa-trash-alt"></i></a>';
+					}
+
+				}
+			],
+			columnDefs: [
+				{
+					targets: [2],
+					className: "text-center",
+				}
+			]
+		});
+
+		$('#btnImport').click(function () {
+			var domain = '@Url.Content("~/")';
+			var id = (new URL(location.href)).searchParams.get('id');
+
+			if ($('#fileToBeUploaded').val() == '') {
+				$(document).Toasts('create', {
+					class: 'bg-warning',
+					title: 'Warning !!!',
+					body: '<div style="width:300px" >Please choose image file first. </div>'
+				});
+				return;
+			}
+			var formData = new FormData();
+			var file = $('#fileToBeUploaded')[0];
+			formData.append('file', file.files[0]);
+			$.ajax({
+				url: domain + 'api/upload',
+				type: 'POST',
+				data: formData,
+				contentType: false,
+				processData: false,
+				success: function (d) {
+					$(document).Toasts('create', {
+						class: 'bg-success',
+						title: 'Successful',
+						body: '<div style="width:300px" >Upload Completed.</div>'
+					});
+					table.ajax.reload();
+				},
+				error: function () {
+					$(document).Toasts('create', {
+						class: 'bg-danger',
+						title: 'Error in Save Data !!!',
+						body: '<div style="width:300px" >Please choose image file first. </div>'
+					});
+				}
+			});
+		});
+
+		menu_departments();
+	});
+
+	function checkfile(sender) {
+		var validExts = new Array(".xlsx", ".xls");
+		var fileExt = sender.value;
+		fileExt = fileExt.substring(fileExt.lastIndexOf('.'));
+		if (validExts.indexOf(fileExt) < 0) {
+			$(document).Toasts('create', {
+				class: 'bg-warning',
+				title: 'Warning !!!',
+				body: '<div style="width:300px" >' + "Invalid file selected, valid files are of " +
+					validExts.toString() + " types." + '</div>'
+			});
+			return false;
+		}
+		else return true;
+	}
+</script>
+

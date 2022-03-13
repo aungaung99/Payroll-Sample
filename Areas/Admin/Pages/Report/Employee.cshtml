@@ -1,0 +1,330 @@
+﻿@page
+@model Payroll.Areas.Admin.Pages.Report.EmployeeModel
+@{
+	ViewData["Title"] = "Employee Report";
+	ViewData["pageTitle"] = "Employee Report";
+}
+<!-- DataTables -->
+<link rel="stylesheet" href="~/plugins/datatables-bs4/css/dataTables.bootstrap4.min.css">
+<link rel="stylesheet" href="~/plugins/datatables-responsive/css/responsive.bootstrap4.min.css">
+<link rel="stylesheet" href="~/plugins/datatables-buttons/css/buttons.bootstrap4.min.css">
+<!-- Select2 -->
+<link rel="stylesheet" href="~/plugins/select2/css/select2.min.css">
+<link rel="stylesheet" href="~/plugins/select2-bootstrap4-theme/select2-bootstrap4.min.css">
+
+<!-- daterange picker -->
+<link rel="stylesheet" href="~/plugins/daterangepicker/daterangepicker.css">
+<!-- iCheck for checkboxes and radio inputs -->
+<link rel="stylesheet" href="~/plugins/icheck-bootstrap/icheck-bootstrap.min.css">
+<!-- Tempusdominus Bootstrap 4 -->
+<link rel="stylesheet" href="~/plugins/tempusdominus-bootstrap-4/css/tempusdominus-bootstrap-4.min.css">
+
+<link rel="stylesheet" href="~/admin-lte/css/adminlte.css" />
+<style>
+	table.dataTable tbody td {
+		vertical-align: middle;
+		padding-top: 5px;
+		padding-bottom: 5px;
+	}
+
+	.dt-buttons {
+		position: absolute !important;
+		visibility: hidden;
+	}
+</style>
+
+<div class="container-fluid">
+	<div class="row">
+		<div class="col-12">
+			<div class="card card-info card-outline card-outline-tabs">
+				<div class="card-header bg-light p-0 border-bottom-0">
+					<ul class="nav nav-tabs" id="custom-tabs-four-tab" role="tablist">
+						<li class="nav-item">
+							<a class="nav-link active" id="normal-tab" data-toggle="pill" href="#normal" role="tab" aria-controls="normal" aria-selected="true">Normal</a>
+						</li>
+						<li class="nav-item">
+							<a class="nav-link" id="baseon-tab" data-toggle="pill" href="#baseon" role="tab" aria-controls="baseon" aria-selected="false">Base on department</a>
+						</li>
+					</ul>
+				</div>
+				<div class="card-body pb-1">
+					<div class="row">
+						<div class="col-xl-4">
+							<select id="DDLDepartment" class="form-control select2"></select>
+						</div>
+						<div class="col-xl-2">
+							<a href="#" id="btnView" class="btn btn-primary">View</a>
+							<a href="#" class="btn btn-success" id="btnExcel">Excel</a>
+							<a href="#" class="btn btn-success" id="btnPDF">PDF</a>
+						</div>
+					</div>
+				</div>
+				<div class="card-body pt-2">
+					<div class="tab-content" id="custom-tabs-four-tabContent">
+						<div class="tab-pane fade show active" id="normal" role="tabpanel" aria-labelledby="normal-tab">
+							<table id="example" class="table table-bordereless table-striped table-hover">
+								<thead class="bg-light">
+									<tr>
+										<th class="text-primary" colspan="7">Normal report</th>
+									</tr>
+									<tr>
+										<th>Id</th>
+										<th>Name</th>
+										<th>Department</th>
+										<th>DOB</th>
+										<th>Hired Date</th>
+										<th>Salary $</th>
+										<th>Action</th>
+									</tr>
+								</thead>
+							</table>
+						</div>
+						<div class="tab-pane fade" id="baseon" role="tabpanel" aria-labelledby="baseon-tab">
+							<table id="example_baseon" class="table table-bordereless table-striped table-hover">
+								<thead class="bg-light">
+									<tr>
+										<th class="text-primary" colspan="7">Base on department report</th>
+									</tr>
+									<tr>
+										<th>Id</th>
+										<th>Name</th>
+										<th>Department</th>
+										<th>DOB</th>
+										<th>Hired Date</th>
+										<th>Salary $</th>
+										<th>Action</th>
+									</tr>
+								</thead>
+							</table>
+						</div>
+					</div>
+				</div>
+				<!-- /.card -->
+			</div>
+		</div>
+	</div>
+</div>
+
+<partial name="_Vendor_Scripts" />
+<!-- DataTables  & Plugins -->
+<script src="~/plugins/datatables/jquery.dataTables.min.js"></script>
+<script src="~/plugins/datatables-bs4/js/dataTables.bootstrap4.min.js"></script>
+<script src="~/plugins/datatables-responsive/js/dataTables.responsive.min.js"></script>
+<script src="~/plugins/datatables-responsive/js/responsive.bootstrap4.min.js"></script>
+<script src="~/plugins/datatables-buttons/js/dataTables.buttons.min.js"></script>
+<script src="~/plugins/datatables-buttons/js/buttons.bootstrap4.min.js"></script>
+<script src="~/plugins/jszip/jszip.min.js"></script>
+<script src="~/plugins/pdfmake/pdfmake.min.js"></script>
+<script src="~/plugins/pdfmake/vfs_fonts.js"></script>
+<script src="~/plugins/datatables-buttons/js/buttons.html5.min.js"></script>
+<script src="~/plugins/datatables-buttons/js/buttons.print.min.js"></script>
+<script src="~/plugins/datatables-buttons/js/buttons.colVis.min.js"></script>
+
+<!-- Select2 -->
+<script src="~/plugins/select2/js/select2.full.min.js"></script>
+<!-- InputMask -->
+<script src="~/plugins/moment/moment.min.js"></script>
+<script src="~/plugins/inputmask/jquery.inputmask.min.js"></script>
+<!-- date-range-picker -->
+<script src="~/plugins/daterangepicker/daterangepicker.js"></script>
+<!-- Tempusdominus Bootstrap 4 -->
+<script src="~/plugins/tempusdominus-bootstrap-4/js/tempusdominus-bootstrap-4.min.js"></script>
+<!-- AdminLTE App -->
+<script src="~/admin-lte/js/adminlte.min.js"></script>
+<script>
+	$(document).ready(function () {
+		var activeTab = 'normal';
+
+		menu_report_employee();
+
+		$('.select2').select2();
+
+		// Department API Requset
+		var url = '@Url.Content("~/")' + "api/datatables/departments";
+		$.getJSON(url, function (data) {
+			var jList = data["data"];
+			var items = '';
+			items += "<option selected disabled value=''>Choose Departments</option>";
+			items += "<option selected value='0'>All Departments</option>";
+			$('DDLDepartment').empty();
+			$.each(jList, function (i, department) {
+				items += "<option class='select2-item' value='" + department.deptCode + "'>" + department.deptName + "</option>";
+			});
+			$('#DDLDepartment').html(items);
+		});
+
+		// Department API Requset
+		var url = '@Url.Content("~/")' + "api/datatables/report-employee";
+
+		$('#btnView').click(function () {
+			var ddlsource = document.getElementById("DDLDepartment");
+			var selectedid = ddlsource.options[ddlsource.selectedIndex].value;
+
+			if ($('#DDLDepartment').val() != null) {
+				url = "@Url.Content("~/")" + "api/datatables/report-employee" + "?deptcode=" + selectedid;
+			}
+
+			console.log("Department: " +$('#DDLDepartment').val());
+
+			table.ajax.reload();
+
+			table_baseon.ajax.reload();
+		});
+
+		var table = $('#example').DataTable({
+			paging: true,
+			lengthChange: false,
+			searching: false,
+			ordering: true,
+			info: true,
+			autoWidth: false,
+			responsive: true,
+			dom: 'Bfrtip',
+			ajax: function (data, callback, settings) {
+				$.ajax({
+					url: url,
+				}).then(function (json) {
+					json["data"] = json["data"];
+					callback(json);
+				});
+			},
+			columns: [
+				{ data: 'empId' },
+				{ data: 'empName' },
+				{ data: 'deptName' },
+				{
+					data: "dob",
+					render: function (data) {
+						return '<span>' + data.substring(0, 4) + '/' + data.substring(5, 7) + '/' + data.substring(8, 10) + '<span>';
+					}
+				},
+				{
+					data: "hiredDate",
+					render: function (data) {
+						return '<span>' + data.substring(0, 4) + '/' + data.substring(5, 7) + '/' + data.substring(8, 10) + '<span>';
+					}
+				},
+				{
+					data: null,
+					render: function (data, type, row) {
+						return '<span>' + numberWithCommas(row.salary) + '&nbsp;$&nbsp;/Hrs</span>'
+					}
+				},
+				{
+					data: "empId",
+					responsivePriority: 3,
+					render: function (data) {
+						return '<a class="btn btn-outline-danger btn-sm me-1 deleted" href="employee/delete?id=' + data + '">' +
+							'<i class="fas fa-trash-alt"></i></a>';
+					}
+
+				}
+			],
+			columnDefs: [
+				{
+					targets: [5],
+					className: "text-center",
+				}
+			]
+		});
+
+		var groupColumn = 2;
+		var table_baseon = $('#example_baseon').DataTable({
+			paging: true,
+			lengthChange: false,
+			searching: false,
+			ordering: true,
+			info: true,
+			autoWidth: false,
+			responsive: true,
+			dom: 'Bfrtip',
+			ajax: function (data, callback, settings) {
+				$.ajax({
+					url: url,
+				}).then(function (json) {
+					json["data"] = json["data"];
+					callback(json);
+				});
+			},
+			columns: [
+				{ data: 'empId' },
+				{ data: 'empName' },
+				{ data: 'deptName' },
+				{
+					data: "dob",
+					render: function (data) {
+						return '<span>' + data.substring(0, 4) + '/' + data.substring(5, 7) + '/' + data.substring(8, 10) + '<span>';
+					}
+				},
+				{
+					data: "hiredDate",
+					render: function (data) {
+						return '<span>' + data.substring(0, 4) + '/' + data.substring(5, 7) + '/' + data.substring(8, 10) + '<span>';
+					}
+				},
+				{
+					data: null,
+					render: function (data, type, row) {
+						return '<span>' + numberWithCommas(row.salary) + '&nbsp;$&nbsp;/Hrs</span>'
+					}
+				},
+				{
+					data: "empId",
+					responsivePriority: 3,
+					render: function (data) {
+						return '<a class="btn btn-outline-danger btn-sm me-1 deleted" href="employee/delete?id=' + data + '">' +
+							'<i class="fas fa-trash-alt"></i></a>';
+					}
+
+				}
+			],
+			columnDefs: [
+				{
+					targets: [5],
+					className: "text-center",
+				},
+				{ "visible": false, "targets": groupColumn }
+			],
+			ordering: [[groupColumn, 'asc']],
+			drawCallback: function (settings) {
+				var api = this.api();
+				var rows = api.rows({ page: 'current' }).nodes();
+				var last = null;
+
+				api.column(groupColumn, { page: 'current' }).data().each(function (group, i) {
+					if (last !== group) {
+						$(rows).eq(i).before(
+							'<tr class="group bg-lightblue py-1"><td colspan="6" class="py-1">' + group + '</td></tr>'
+						);
+
+						last = group;
+					}
+				});
+			}
+		});
+
+		$("#btnExcel").on("click", function () {
+			console.log(activeTab);
+			if (activeTab == 'normal') { table.button('.buttons-excel').trigger(); }
+			else if (activeTab == "baseon") { table_baseon.button('.buttons-excel').trigger(); }
+		});
+
+		$("#btnPDF").on("click", function () {
+			console.log(activeTab);
+			if (activeTab == 'normal') { table.button('.buttons-pdf').trigger(); }
+			else if (activeTab == "baseon") { table_baseon.button('.buttons-pdf').trigger(); }
+		});
+
+		$('#normal-tab').click(function () {
+			activeTab = 'normal';
+		});
+
+		$('#baseon-tab').click(function () {
+			activeTab = 'baseon';
+		});
+	});
+
+	function numberWithCommas(x) {
+		return x.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+	}
+</script>

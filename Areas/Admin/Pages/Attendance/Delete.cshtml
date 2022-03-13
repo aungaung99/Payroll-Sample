@@ -1,0 +1,37 @@
+﻿@page
+@model Payroll.Areas.Admin.Pages.Attendance.DeleteModel
+
+@{
+	ViewData["Title"] = "Attendance";
+	ViewData["pageTitle"] = "Attendance";
+}
+
+<div class="container-fluid">
+	<div class="row d-flex justify-content-center">
+		<div class="col-md-5">
+			<div class="card">
+				<div class="card-header bg-light">
+					<div class="card-title pb-0">
+						<h4 class="mb-0 text-danger">Confirmation</h4>
+					</div>
+				</div>
+				<div class="card-body">
+					<h5 class="mb-4">Are you sure you want to delete this attendance?</h5>
+					<form method="post">
+						<input type="hidden" asp-for="Attendance.EmpId" />
+						<input type="submit" value="Delete" class="btn btn-danger" />
+						<a asp-page="./Index" class="btn btn-secondary">Cancel</a>
+					</form>
+
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+
+<partial name="_Vendor_Scripts" />
+<script>
+	$(document).ready(function () {
+		menu_attendance();
+	});
+</script>

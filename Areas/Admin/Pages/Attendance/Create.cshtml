@@ -1,0 +1,151 @@
+﻿@page
+@model Payroll.Areas.Admin.Pages.Attendance.CreateModel
+
+@{
+	ViewData["Title"] = "Attendance";
+	ViewData["pageTitle"] = "Attendance";
+}
+
+<!-- Select2 -->
+<link rel="stylesheet" href="~/plugins/select2/css/select2.min.css">
+<link rel="stylesheet" href="~/plugins/select2-bootstrap4-theme/select2-bootstrap4.min.css">
+
+<!-- daterange picker -->
+<link rel="stylesheet" href="~/plugins/daterangepicker/daterangepicker.css">
+<!-- iCheck for checkboxes and radio inputs -->
+<link rel="stylesheet" href="~/plugins/icheck-bootstrap/icheck-bootstrap.min.css">
+<!-- Tempusdominus Bootstrap 4 -->
+<link rel="stylesheet" href="~/plugins/tempusdominus-bootstrap-4/css/tempusdominus-bootstrap-4.min.css">
+
+<link rel="stylesheet" href="~/admin-lte/css/adminlte.css" />
+
+<div class="row d-flex justify-content-center">
+	<div class="col-md-6">
+		<form method="post" class="needs-validation" novalidate>
+			<div class="card">
+				<div class="card-header bg-light border-secondary border-bottom">
+					<div class="card-title pb-0">
+						<h5 class="mb-0">Create new employee</h5>
+					</div>
+				</div>
+				<div class="card-body">
+					<div asp-validation-summary="ModelOnly" class="text-danger"></div>
+					<div class="form-group mb-2">
+						<label class="control-label">Name</label>
+						<select id="DDLEmployee" asp-for="Attendance.EmpId" class="form-control select2" required></select>
+						<span class="invalid-feedback">
+							Please choose employee.
+						</span>
+					</div>
+					<div class="row">
+						<div class="col-6">
+							<div class="form-group">
+								<!-- time Picker -->
+								<div class="bootstrap-timepicker">
+									<div class="form-group">
+										<label>Clock In:</label>
+										<div class="input-group date" id="timepicker" data-target-input="nearest">
+											<input readonly asp-for="ClockIn" type="text" class="form-control datetimepicker-input" data-target="#timepicker" placeholder="1:00 AM" required />
+											<div class="input-group-append" data-target="#timepicker" data-toggle="datetimepicker">
+												<div class="input-group-text"><i class="far fa-clock"></i></div>
+											</div>
+											<div class="invalid-feedback">
+												Please choose clock in.
+											</div>
+										</div>
+										<!-- /.input group -->
+									</div>
+									<!-- /.form group -->
+								</div>
+							</div>
+						</div>
+						<div class="col-6">
+							<div class="form-group mb-2">
+								<!-- time Picker -->
+								<div class="bootstrap-timepicker">
+									<div class="form-group">
+										<label>Clock Out:</label>
+										<div class="input-group date" id="timepicker1" data-target-input="nearest">
+											<input asp-for="ClockOut" type="text" class="form-control datetimepicker-input" data-target="#timepicker1" placeholder="4: 00 PM" required />
+											<div class="input-group-append" data-target="#timepicker1" data-toggle="datetimepicker">
+												<div class="input-group-text"><i class="far fa-clock"></i></div>
+											</div>
+											<div class="invalid-feedback">
+												Please choose clock out.
+											</div>
+										</div>
+										<!-- /.input group -->
+									</div>
+									<!-- /.form group -->
+								</div>
+							</div>
+						</div>
+					</div>
+					<div class="form-group">
+						<label class="control-label">Total Working Hours</label>
+						<input asp-for="Attendance.TotalWorkingHour" class="form-control" placeholder="Enter total working hours..." required />
+						<span class="invalid-feedback">
+							Please type total working hours.
+						</span>
+					</div>
+					<div class="form-group mb-2">
+						<label class="control-label">Late Minutes</label>
+						<input asp-for="Attendance.LateMinute" class="form-control" placeholder="Enter late minutes..."  required />
+						<span class="invalid-feedback">
+							Please type late minute.
+						</span>
+					</div>
+					<div class="form-group">
+						<input type="submit" value="Submit" class="btn btn-primary" />
+						<a asp-page="./Index" asp-area="Admin" class="btn btn-secondary">Cancel</a>
+					</div>
+				</div>
+			</div>
+		</form>
+	</div>
+</div>
+
+<partial name="_Vendor_Scripts" />
+
+<!-- Select2 -->
+<script src="~/plugins/select2/js/select2.full.min.js"></script>
+<!-- InputMask -->
+<script src="~/plugins/moment/moment.min.js"></script>
+<script src="~/plugins/inputmask/jquery.inputmask.min.js"></script>
+<!-- date-range-picker -->
+<script src="~/plugins/daterangepicker/daterangepicker.js"></script>
+<!-- Tempusdominus Bootstrap 4 -->
+<script src="~/plugins/tempusdominus-bootstrap-4/js/tempusdominus-bootstrap-4.min.js"></script>
+<!-- AdminLTE App -->
+<script src="~/admin-lte/js/adminlte.min.js"></script>
+<script>
+	$(document).ready(function () {
+		menu_employee();
+
+		$('.select2').select2();
+
+		//Timepicker
+		$('#timepicker').datetimepicker({
+			format: 'LT'
+		});
+
+		//Timepicker
+		$('#timepicker1').datetimepicker({
+			format: 'LT'
+		});
+
+		// Department API Requset
+		var url = '@Url.Content("~/")' + "api/datatables/employee";
+		$.getJSON(url, function (data) {
+			var jList = data["data"];
+			var items = '';
+			items += "<option selected disabled value=''>Choose Employee</option>";
+			$('DDLEmployee').empty();
+			$.each(jList, function (i, employee) {
+				items += "<option class='select2-item' value='" + employee.empId + "'>" + employee.empName + "</option>";
+			});
+			$('#DDLEmployee').html(items);
+		});
+
+	});
+</script>

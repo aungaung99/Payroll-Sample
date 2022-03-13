@@ -1,0 +1,285 @@
+﻿@page
+@model Payroll.Areas.Admin.Pages.Report.AttendanceModel
+@{
+	ViewData["Title"] = "Attendance Report";
+	ViewData["pageTitle"] = "Attendance Report";
+}
+<!-- DataTables -->
+<link rel="stylesheet" href="~/plugins/datatables-bs4/css/dataTables.bootstrap4.min.css">
+<link rel="stylesheet" href="~/plugins/datatables-responsive/css/responsive.bootstrap4.min.css">
+<link rel="stylesheet" href="~/plugins/datatables-buttons/css/buttons.bootstrap4.min.css">
+<!-- Select2 -->
+<link rel="stylesheet" href="~/plugins/select2/css/select2.min.css">
+<link rel="stylesheet" href="~/plugins/select2-bootstrap4-theme/select2-bootstrap4.min.css">
+
+<!-- daterange picker -->
+<link rel="stylesheet" href="~/plugins/daterangepicker/daterangepicker.css">
+<!-- iCheck for checkboxes and radio inputs -->
+<link rel="stylesheet" href="~/plugins/icheck-bootstrap/icheck-bootstrap.min.css">
+<!-- Tempusdominus Bootstrap 4 -->
+<link rel="stylesheet" href="~/plugins/tempusdominus-bootstrap-4/css/tempusdominus-bootstrap-4.min.css">
+
+<link rel="stylesheet" href="~/admin-lte/css/adminlte.css" />
+<style>
+	table.dataTable tbody td {
+		vertical-align: middle;
+		padding-top: 5px;
+		padding-bottom: 5px;
+	}
+
+	.dt-buttons {
+		position: absolute !important;
+		visibility: hidden;
+	}
+</style>
+
+<div class="container-fluid">
+	<div class="row">
+		<div class="col-12">
+			<div class="card card-info card-outline card-outline-tabs">
+				<div class="card-header bg-light p-0 border-bottom-0">
+					<ul class="nav nav-tabs" id="custom-tabs-four-tab" role="tablist">
+						<li class="nav-item">
+							<a class="nav-link active" id="normal-tab" data-toggle="pill" href="#normal" role="tab" aria-controls="normal" aria-selected="true">Normal</a>
+						</li>
+						<li class="nav-item">
+							<a class="nav-link" id="baseon-tab" data-toggle="pill" href="#baseon" role="tab" aria-controls="baseon" aria-selected="false">Base on department</a>
+						</li>
+					</ul>
+				</div>
+				<div class="card-body pb-1">
+					<div class="row">
+						<div class="col-md-3">
+							<div class="input-group date" id="reservationdate" data-target-input="nearest">
+								<input id="dptStart" type="text" placeholder="Start Date" class="form-control datetimepicker-input" data-target="#reservationdate" />
+								<div class="input-group-append" data-target="#reservationdate" data-toggle="datetimepicker">
+									<div class="input-group-text"><i class="fa fa-calendar"></i></div>
+								</div>
+							</div>
+						</div>
+						<div class="col-md-3">
+							<div class="input-group date" id="reservationdate1" data-target-input="nearest">
+								<input id="dptEnd" type="text" placeholder="End Date" class="form-control datetimepicker-input" data-target="#reservationdate1" />
+								<div class="input-group-append" data-target="#reservationdate1" data-toggle="datetimepicker">
+									<div class="input-group-text"><i class="fa fa-calendar"></i></div>
+								</div>
+							</div>
+						</div>
+						<div class="col-xl-3">
+							<input id="txtName" class="form-control" placeholder="Enter name..."/>
+						</div>
+						<div class="col-xl-2">
+							<a href="#" id="btnView" class="btn btn-primary">View</a>
+							<a href="#" class="btn btn-success" id="btnExcel">Excel</a>
+							<a href="#" class="btn btn-success" id="btnPDF">PDF</a>
+						</div>
+					</div>
+				</div>
+				<div class="card-body pt-2">
+					<div class="tab-content" id="custom-tabs-four-tabContent">
+						<div class="tab-pane fade show active" id="custom-tabs-four-home" role="tabpanel" aria-labelledby="custom-tabs-four-home-tab">
+							<table id="example" class="table table-bordereless table-striped table-hover">
+								<thead class="bg-light">
+									<tr>
+										<th class="text-primary" colspan="7">Normal report</th>
+									</tr>
+									<tr>
+										<th>Employee</th>
+										<th>Department</th>
+										<th>Clock In</th>
+										<th>Clock Out</th>
+										<th>Total Working Hour</th>
+										<th>Late Minute</th>
+									</tr>
+								</thead>
+							</table>
+						</div>
+						<div class="tab-pane fade" id="custom-tabs-four-profile" role="tabpanel" aria-labelledby="custom-tabs-four-profile-tab">
+							<table id="example_baseon" class="table table-bordereless table-striped table-hover">
+								<thead class="bg-light">
+									<tr>
+										<th class="text-primary" colspan="7">Base on department report</th>
+									</tr>
+									<tr>
+										<th>Employee</th>
+										<th>Department</th>
+										<th>Clock In</th>
+										<th>Clock Out</th>
+										<th>Total Working Hour</th>
+										<th>Late Minute</th>
+									</tr>
+								</thead>
+							</table>
+						</div>
+					</div>
+				</div>
+				<!-- /.card -->
+			</div>
+		</div>
+	</div>
+</div>
+
+<partial name="_Vendor_Scripts" />
+<!-- DataTables  & Plugins -->
+<script src="~/plugins/datatables/jquery.dataTables.min.js"></script>
+<script src="~/plugins/datatables-bs4/js/dataTables.bootstrap4.min.js"></script>
+<script src="~/plugins/datatables-responsive/js/dataTables.responsive.min.js"></script>
+<script src="~/plugins/datatables-responsive/js/responsive.bootstrap4.min.js"></script>
+<script src="~/plugins/datatables-buttons/js/dataTables.buttons.min.js"></script>
+<script src="~/plugins/datatables-buttons/js/buttons.bootstrap4.min.js"></script>
+<script src="~/plugins/jszip/jszip.min.js"></script>
+<script src="~/plugins/pdfmake/pdfmake.min.js"></script>
+<script src="~/plugins/pdfmake/vfs_fonts.js"></script>
+<script src="~/plugins/datatables-buttons/js/buttons.html5.min.js"></script>
+<script src="~/plugins/datatables-buttons/js/buttons.print.min.js"></script>
+<script src="~/plugins/datatables-buttons/js/buttons.colVis.min.js"></script>
+
+<!-- Select2 -->
+<script src="~/plugins/select2/js/select2.full.min.js"></script>
+<!-- InputMask -->
+<script src="~/plugins/moment/moment.min.js"></script>
+<script src="~/plugins/inputmask/jquery.inputmask.min.js"></script>
+<!-- date-range-picker -->
+<script src="~/plugins/daterangepicker/daterangepicker.js"></script>
+<!-- Tempusdominus Bootstrap 4 -->
+<script src="~/plugins/tempusdominus-bootstrap-4/js/tempusdominus-bootstrap-4.min.js"></script>
+<!-- AdminLTE App -->
+<script src="~/admin-lte/js/adminlte.min.js"></script>
+<script>
+	$(document).ready(function () {
+		var activeTab = 'normal';
+
+		menu_report_attendance();
+
+		$('.select2').select2();
+
+		//Date picker
+		$('#reservationdate').datetimepicker({
+			format: 'L'
+		});
+
+		//Date picker
+		$('#reservationdate1').datetimepicker({
+			format: 'L'
+		});
+
+		// Attendance Report API Requset
+		var url = "@Url.Content("~/")" + "api/datatables/report-attendance";
+
+		$('#btnView').click(function () {
+
+			if ($('#txtName').val() != null) {
+				url = "@Url.Content("~/")" + "api/datatables/report-attendance" + "?name=" + $('#txtName').val();
+			}
+			if ($('#dptStart').val() != '' && $('#dptEnd').val() != '') {
+				url = "@Url.Content("~/")" + "api/datatables/report-attendance?startdate=" + $('#dptStart').val() + '&enddate=' + $('#dptEnd').val();
+			}
+			if ($('#dptStart').val() != '' && $('#dptEnd').val() != '' && $('#txtName').val() != null) {
+				url = "@Url.Content("~/")" + "api/datatables/report-attendance?" + "name=" + $('#txtName').val() + "&startdate=" + $('#dptStart').val() + '&enddate=' + $('#dptEnd').val();
+			}
+
+			console.log("Name: " + $('#txtName').val());
+			console.log($("#dptStart").val() + " - " + $('#dptEnd').val());
+			table.ajax.reload();
+
+			table_baseon.ajax.reload();
+		});
+
+		var table = $('#example').DataTable({
+			paging: true,
+			lengthChange: false,
+			searching: false,
+			ordering: true,
+			info: true,
+			autoWidth: false,
+			responsive: true,
+			dom: 'Bfrtip',
+			ajax: function (data, callback, settings) {
+				$.ajax({
+					url: url,
+				}).then(function (json) {
+					json["data"] = json["data"];
+					callback(json);
+				});
+			},
+			columns: [
+				{ data: 'empName' },
+				{ data: 'deptName' },
+				{ data: 'clockIn' },
+				{ data: 'clockOut' },
+				{ data: 'totalWorkingHour' },
+				{ data: 'lateMinute' }
+			],
+		});
+
+		var groupColumn = 1;
+		var table_baseon = $('#example_baseon').DataTable({
+			paging: true,
+			lengthChange: false,
+			searching: false,
+			ordering: true,
+			info: true,
+			autoWidth: false,
+			responsive: true,
+			ajax: function (data, callback, settings) {
+				$.ajax({
+					url: url,
+				}).then(function (json) {
+					json["data"] = json["data"];
+					callback(json);
+				});
+			},
+			columns: [
+				{ data: 'empName' },
+				{ data: 'deptName' },
+				{ data: 'clockIn' },
+				{ data: 'clockOut' },
+				{ data: 'totalWorkingHour' },
+				{ data: 'lateMinute' }
+			],
+			columnDefs: [
+				{ "visible": false, "targets": groupColumn }
+			],
+			ordering: [[groupColumn, 'asc']],
+			drawCallback: function (settings) {
+				var api = this.api();
+				var rows = api.rows({ page: 'current' }).nodes();
+				var last = null;
+
+				api.column(groupColumn, { page: 'current' }).data().each(function (group, i) {
+					if (last !== group) {
+						$(rows).eq(i).before(
+							'<tr class="group bg-lightblue py-1"><td colspan="6" class="py-1">' + group + '</td></tr>'
+						);
+
+						last = group;
+					}
+				});
+			}
+		});
+
+		$("#btnExcel").on("click", function () {
+			console.log(activeTab);
+			if (activeTab == 'normal') { table.button('.buttons-excel').trigger(); }
+			else if (activeTab == "baseon") { table_baseon.button('.buttons-excel').trigger(); }
+		});
+
+		$("#btnPDF").on("click", function () {
+			console.log(activeTab);
+			if (activeTab == 'normal') { table.button('.buttons-pdf').trigger(); }
+			else if (activeTab == "baseon") { table_baseon.button('.buttons-pdf').trigger(); }
+		});
+
+		$('#normal-tab').click(function () {
+			activeTab = 'normal';
+		});
+
+		$('#baseon-tab').click(function () {
+			activeTab = 'baseon';
+		});
+	});
+
+	function numberWithCommas(x) {
+		return x.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+	}
+</script>
