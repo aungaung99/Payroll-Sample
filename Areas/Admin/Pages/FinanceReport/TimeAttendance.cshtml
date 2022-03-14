@@ -14,6 +14,7 @@
 	.bg-success {
 		background: rgb(27 110 194 / 0.51) !important;
 	}
+
 	table.dataTable tbody td {
 		vertical-align: middle;
 		padding-top: 5px;
@@ -47,21 +48,24 @@
 								</tr>
 							</thead>
 							<tbody class="table-bordered">
-								@foreach (var emp in Model.TimeAttendanceList)
+								@foreach (var emp in Model.GetEmployees)
 								{
 									<tr>
 										<td>
 											@emp.EmpName
 										</td>
 										<td>
-											<input value="@emp.EmpId" hidden /><b class="h3">@emp.TotalWorkingHours hrs</b>&nbsp;Total Working Hours
+											<input value="@emp.EmpId" hidden />
+											<b class="h3">
+												@emp.TotalWorkingHours hrs
+											</b>&nbsp;Total Working Hours
 										</td>
 										<!--loop all days of month-->
 										@for (var numb = 1; numb <= DaysInmonth; numb++)
 										{
 											<!--print only that date time value which is equal to current date(as it will match column header) and current employee name, else print empty-->
 											var GetThatDayValue = Model.TimeAttendanceList.Where(a => a.Date.Day == numb && a.EmpName == emp.EmpName).FirstOrDefault();
-											var DD = GetThatDayValue != null ? GetThatDayValue.InoutTime + "" : "A";
+											var DD = GetThatDayValue != null ? GetThatDayValue.InoutTime : "A";
 
 
 											@if (DD == "A")

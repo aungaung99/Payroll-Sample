@@ -22,6 +22,7 @@ namespace Payroll.Areas.Admin.Pages.FinanceReport
 
         public class TimeAttendance
         {
+            public string AttendId { get; set; }
             public int? EmpId { get; set; }
             public string EmpName { get; set; }
             public DateTime Date { get; set; }
@@ -29,7 +30,17 @@ namespace Payroll.Areas.Admin.Pages.FinanceReport
             public double? TotalWorkingHours { get; set; }
         }
 
+        public class EmployeeVModel
+        {
+            public int? EmpId { get; set; }
+            public string EmpName { get; set; }
+            public double TotalWorkingHours { get; set; }
+        }
+
+
         public IList<TimeAttendance> TimeAttendanceList { get; set; }
+
+        public IList<EmployeeVModel> GetEmployees { get; set; }
 
         //public string GetInOutTime(int EmpId)
         //{
@@ -43,19 +54,31 @@ namespace Payroll.Areas.Admin.Pages.FinanceReport
                         on attendance.EmpId equals employee.EmpId
                         select new TimeAttendance
                         {
+                            AttendId = attendance.AttendId,
                             EmpId = employee.EmpId,
                             EmpName = employee.EmpName,
                             Date = attendance.Date.Value,
                             InoutTime = "<span class='text-success'>" + attendance.ClockIn.Value.ToString("hh:mm tt") + "</span></br><span class='text-danger'>" + attendance.ClockOut.Value.ToString("hh:mm tt") + "</span>",
                         };
-            var list = query.ToList();
+            TimeAttendanceList = query.ToList();
 
-            foreach(var item in list)
+            var empQuery = (from emp in _context.Employees
+                            join attendance in _context.Attendances
+                            on emp.EmpId equals attendance.EmpId
+                            group emp by new { emp.EmpId,emp.EmpName}
+                            into gemp
+                            select new EmployeeVModel()
+                            {
+                                EmpId = gemp.Key.EmpId,
+                                EmpName = gemp.Key.EmpName
+                            }).ToList();
+            var empList = empQuery.ToList();
+            foreach (var item in empList)
             {
                 item.TotalWorkingHours = EmpTotalWorkingHours(item.EmpId.Value);
             }
 
-            TimeAttendanceList = list;
+            GetEmployees = empList;
 
             //TimeAttendanceList = TimeAttendanceList.Ea(t=>t.TotalWorkingHours = 1);
         }
