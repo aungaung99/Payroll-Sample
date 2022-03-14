@@ -12,7 +12,7 @@ namespace Payroll.Data
         public DateTime? Date { get; set; }
         public DateTime? ClockIn { get; set; }
         public DateTime? ClockOut { get; set; }
-        public int? TotalWorkingHour { get; set; }
+        public double? TotalWorkingHour { get; set; }
         public int? LateMinute { get; set; }
     }
 }

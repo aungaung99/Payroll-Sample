@@ -96,6 +96,7 @@ namespace Payroll.Areas.Admin.Controllers
                                                     ClockOut = attendance.ClockOut.Value.ToString("dd/MMM/yyyy hh:mm:ss tt"),
                                                     LateMinute = attendance.LateMinute,
                                                     TotalWorkingHour = attendance.TotalWorkingHour,
+                                                    TotalActualWHour= Calculate(attendance.TotalWorkingHour.Value, attendance.LateMinute.Value),
                                                     DeptName = department.DeptName
                                                 };
 
@@ -165,6 +166,7 @@ namespace Payroll.Areas.Admin.Controllers
                                                     ClockOut = attendance.ClockOut.Value.ToString("dd/MMM/yyyy hh:mm:ss tt"),
                                                     LateMinute = attendance.LateMinute,
                                                     TotalWorkingHour = attendance.TotalWorkingHour,
+                                                    TotalActualWHour = Calculate(attendance.TotalWorkingHour.Value, attendance.LateMinute.Value),
                                                     DeptCode = employee.DeptCode,
                                                     DeptName = department.DeptName
                                                 };

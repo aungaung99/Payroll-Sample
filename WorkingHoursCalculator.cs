@@ -10,7 +10,7 @@ namespace Payroll
         public static double Calculate(double thrs, double lmin)
         {
             decimal totalminutes = (decimal)Math.Round(thrs * 60.00, 2);
-            decimal lateminutes = (decimal)Math.Round(lmin / 60.00, 2);
+            decimal lateminutes = (decimal)lmin;
             decimal actualminites = Math.Round(totalminutes - lateminutes, 2);
             return (double)Math.Round(actualminites / 60, 2);
         }

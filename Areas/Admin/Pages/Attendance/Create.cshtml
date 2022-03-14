@@ -43,9 +43,9 @@
 								<!-- time Picker -->
 								<div class="bootstrap-timepicker">
 									<div class="form-group">
-										<label>Clock In:</label>
+										<label>Clock In</label>
 										<div class="input-group date" id="timepicker" data-target-input="nearest">
-											<input readonly asp-for="ClockIn" type="text" class="form-control datetimepicker-input" data-target="#timepicker" placeholder="1:00 AM" required />
+											<input onchange="getTimeDiff()" id="txtFromTime" readonly asp-for="ClockIn" type="text" class="form-control datetimepicker-input" data-target="#timepicker" placeholder="1:00 AM" required />
 											<div class="input-group-append" data-target="#timepicker" data-toggle="datetimepicker">
 												<div class="input-group-text"><i class="far fa-clock"></i></div>
 											</div>
@@ -64,9 +64,9 @@
 								<!-- time Picker -->
 								<div class="bootstrap-timepicker">
 									<div class="form-group">
-										<label>Clock Out:</label>
+										<label>Clock Out</label>
 										<div class="input-group date" id="timepicker1" data-target-input="nearest">
-											<input asp-for="ClockOut" type="text" class="form-control datetimepicker-input" data-target="#timepicker1" placeholder="4: 00 PM" required />
+											<input onchange="getTimeDiff()" id="txtToTime" asp-for="ClockOut" type="text" class="form-control datetimepicker-input" data-target="#timepicker1" placeholder="4: 00 PM" required />
 											<div class="input-group-append" data-target="#timepicker1" data-toggle="datetimepicker">
 												<div class="input-group-text"><i class="far fa-clock"></i></div>
 											</div>
@@ -83,14 +83,14 @@
 					</div>
 					<div class="form-group">
 						<label class="control-label">Total Working Hours</label>
-						<input asp-for="Attendance.TotalWorkingHour" class="form-control" placeholder="Enter total working hours..." required />
+						<input id="txtTWH" type="number" step="0.5" asp-for="Attendance.TotalWorkingHour" onfocus="getTimeDiff()" class="form-control" placeholder="Enter total working hours..." required />
 						<span class="invalid-feedback">
 							Please type total working hours.
 						</span>
 					</div>
 					<div class="form-group mb-2">
 						<label class="control-label">Late Minutes</label>
-						<input asp-for="Attendance.LateMinute" class="form-control" placeholder="Enter late minutes..."  required />
+						<input asp-for="Attendance.LateMinute" class="form-control" placeholder="Enter late minutes..." type="number" required />
 						<span class="invalid-feedback">
 							Please type late minute.
 						</span>
@@ -120,6 +120,14 @@
 <script src="~/admin-lte/js/adminlte.min.js"></script>
 <script>
 	$(document).ready(function () {
+
+		//var fromstr = "@DateTime.Now.Date.ToString("dd/MMM/yyyy") 01:00 PM";
+		//var tostr = "@DateTime.Now.Date.ToString("dd/MMM/yyyy") 05:30 PM";
+		//var fromdate = new Date(fromstr);
+		//var todate = new Date(tostr);
+		//var diff = todate - fromdate;
+		//window.alert(diff/(60*60*1000)).toFixed(2);
+
 		menu_employee();
 
 		$('.select2').select2();
@@ -148,4 +156,20 @@
 		});
 
 	});
+
+	function getTimeDiff() {
+		if ($('#txtFromTime').val() != '' && $('#txtToTime').val() != '') {
+
+			var fromTime = "@DateTime.Now.Date.ToString("dd/MMM/yyyy") " + $('#txtFromTime').val();
+			console.log('From: ' + new Date(fromTime));
+
+			var toTime = "@DateTime.Now.Date.ToString("dd/MMM/yyyy") " + $('#txtToTime').val();
+			console.log('To: ' + new Date(toTime));
+
+			var timeDiff = new Date(toTime) - new Date(fromTime);
+			console.log('Diff: ' + (timeDiff / (60 * 60 * 1000)).toFixed(2));
+
+			$('#txtTWH').val((timeDiff / (60 * 60 * 1000)).toFixed(2));
+		}
+	}
 </script>

@@ -14,7 +14,8 @@ namespace Payroll.Areas.Admin.Model
         public string DeptName { get; set; }
         public string ClockIn { get; set; }
         public string ClockOut { get; set; }
-        public int? TotalWorkingHour { get; set; }
+        public double? TotalWorkingHour { get; set; }
         public int? LateMinute { get; set; }
+        public double? TotalActualWHour { get; set; }
     }
 }

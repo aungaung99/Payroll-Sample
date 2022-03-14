@@ -39,10 +39,10 @@
 			<div class="card">
 				<div class="card-body">
 					<div class="row">
-						<div class="col-md-3 mb-3">
+						<div class="col-xl-3 col-md-3 mb-3">
 							<select id="DDLDepartment" class="form-control select2"></select>
 						</div>
-						<div class="col-md-3 mb-3">
+						<div class="col-xl-3  col-md-3 mb-3">
 							<div class="input-group date" id="reservationdate" data-target-input="nearest">
 								<input id="dptHired" type="text" placeholder="mm/dd/yyyy" class="form-control datetimepicker-input" data-target="#reservationdate" />
 								<div class="input-group-append" data-target="#reservationdate" data-toggle="datetimepicker">
@@ -50,13 +50,12 @@
 								</div>
 							</div>
 						</div>
-						<div class="col-xl-4 col-md-6">
+						<div class="col-xl-6 col-md-6">
 							<a href="#" id="btnView" class="btn btn-primary">View</a>
 							<a href="#" class="btn btn-success" id="btnExcel">Excel</a>
 							<a href="#" class="btn btn-success" id="btnPDF">PDF</a>
-						</div>
-						<div class="col-md-3 mb-3 text-right">
-							<a asp-page="Create" asp-area="Admin" class="btn btn-success">Create new employee</a>
+
+							<a asp-page="Create" asp-area="Admin" class="btn btn-success float-right">Create new employee</a>
 						</div>
 					</div>
 					<table id="example" class="table table-bordereless table-striped table-hover">

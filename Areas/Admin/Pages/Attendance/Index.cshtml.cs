@@ -14,18 +14,9 @@ namespace Payroll.Areas.Admin.Pages.Attendance
     [Authorize]
     public class IndexModel : PageModel
     {
-        private readonly Payroll.Data.PayrollContext _context;
-
-        public IndexModel(Payroll.Data.PayrollContext context)
+        public void OnGet()
         {
-            _context = context;
-        }
 
-        public IList<Data.Attendance> Attendance { get;set; }
-
-        public async Task OnGetAsync()
-        {
-            Attendance = await _context.Attendances.ToListAsync();
         }
     }
 }
